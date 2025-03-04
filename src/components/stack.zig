@@ -22,4 +22,5 @@ pub fn items(self: *const Stack) []const u16 {
 
 pub fn reset(self: *Stack) void {
     self.stack = [_]u16{0} ** 24;
+    self.ptr = 0;
 }

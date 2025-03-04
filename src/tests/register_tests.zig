@@ -114,23 +114,23 @@ test "Registers set - sets error_msg and paused on invalid register number" {
     try testing.expect(g.paused);
 }
 
-test "Registers get_nullterminated_string - formats string correctly" {
+test "Registers getNullterminatedString - formats string correctly" {
     var registers = Registers{};
 
     // Test for different registers and values
     registers.set(0, 0x0A);
-    const str1 = registers.get_nullterminated_string(0);
+    const str1 = registers.getNullterminatedString(0);
     try testing.expectEqualStrings("V0 = 0x0A", std.mem.trimRight(u8, &str1, "\x00"));
 
     registers.set(9, 0xFF);
-    const str2 = registers.get_nullterminated_string(9);
+    const str2 = registers.getNullterminatedString(9);
     try testing.expectEqualStrings("V9 = 0xFF", std.mem.trimRight(u8, &str2, "\x00"));
 
     registers.set(15, 0x00);
-    const str3 = registers.get_nullterminated_string(15);
+    const str3 = registers.getNullterminatedString(15);
     try testing.expectEqualStrings("VF = 0x00", std.mem.trimRight(u8, &str3, "\x00"));
 
     registers.set(10, 0x12);
-    const str4 = registers.get_nullterminated_string(10);
+    const str4 = registers.getNullterminatedString(10);
     try testing.expectEqualStrings("VA = 0x12", std.mem.trimRight(u8, &str4, "\x00"));
 }
