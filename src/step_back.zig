@@ -19,7 +19,7 @@ pub const Chip8State = struct {
 
     pub fn new(chip8: *const Chip8) Chip8State {
         var stack = [_]u16{0} ** 16;
-        std.mem.copyForwards(u16, &stack, chip8.stack.stack.items);
+        std.mem.copyForwards(u16, &stack, &chip8.stack.stack);
         const state = Chip8State{
             .PC = chip8.*.PC,
             .I_reg = chip8.*.I_reg,

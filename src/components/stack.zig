@@ -1,24 +1,25 @@
 const std = @import("std");
 const Stack = @This();
 
-stack: std.ArrayList(u16),
-
-pub fn init(alloc: std.mem.Allocator) Stack {
-    return Stack{ .stack = std.ArrayList(u16).initCapacity(alloc, 4) catch std.debug.panic("Couldnt create stack", .{}) };
-}
-
-pub fn deinit(self: Stack) void {
-    self.stack.deinit();
-}
+stack: [24]u16 = [_]u16{0} ** 24, // original has 48 byte stack, i just copied that -> there is no real reason it cant be larger though
+ptr: u8 = 0,
 
 pub fn push(self: *Stack, data: u16) void {
-    self.stack.append(data) catch std.debug.panic("Ran out of memory in the stack", .{});
+    if (self.ptr >= 16) return;
+    self.stack[self.ptr] = data;
+    self.ptr += 1;
 }
 
 pub fn pop(self: *Stack) u16 {
-    return self.stack.pop();
+    if (self.ptr == 0) return 0;
+    self.ptr -= 1;
+    return self.stack[self.ptr];
+}
+
+pub fn items(self: *const Stack) []const u16 {
+    return self.stack[0..self.ptr];
 }
 
 pub fn reset(self: *Stack) void {
-    while (self.stack.popOrNull() != null) {}
+    self.stack = [_]u16{0} ** 16;
 }

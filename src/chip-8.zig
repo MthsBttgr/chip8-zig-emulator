@@ -26,7 +26,7 @@ last_instruction_nr: u16 = 0,
 pub fn init(alloc: std.mem.Allocator) !Chip8 {
     return Chip8{
         .memory = try Memory.init(alloc),
-        .stack = Stack.init(alloc),
+        .stack = Stack{},
         .register = Register{},
         .delay_timer = Timer.init(),
         .sound_timer = Timer.init(),
@@ -45,7 +45,6 @@ pub fn reset(self: *Chip8) void {
 
 pub fn deinit(self: *Chip8) void {
     self.memory.deinit();
-    self.stack.deinit();
 }
 
 ///Reads an instruction from memory

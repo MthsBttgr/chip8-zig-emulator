@@ -76,7 +76,7 @@ pub fn drawFromChip8(self: *GUI, emulator: *Emulator) void {
     self.playbar.draw(chip8);
     self.special_registers.draw(chip8.PC, chip8.I_reg, chip8.last_instruction_nr, chip8.last_instruction);
     self.settings.draw();
-    self.stack.draw(chip8.stack.stack.items);
+    self.stack.draw(chip8.stack.items());
     self.filepicker.draw(emulator);
     self.err_bar.draw();
 
