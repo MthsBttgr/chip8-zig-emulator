@@ -16,42 +16,42 @@ pub fn initRect(rect: rl.Rectangle) Rect {
     return Rect{ .rl_rectangle = rect };
 }
 
-pub fn set_x(self: Rect, new_x: f32) Rect {
+pub fn setX(self: Rect, new_x: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.x = new_x;
     return new_self;
 }
-pub fn set_y(self: Rect, new_y: f32) Rect {
+pub fn setY(self: Rect, new_y: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.y = new_y;
     return new_self;
 }
-pub fn set_width(self: Rect, new_width: f32) Rect {
+pub fn setWidth(self: Rect, new_width: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.width = new_width;
     return new_self;
 }
-pub fn set_height(self: Rect, new_height: f32) Rect {
+pub fn setHeight(self: Rect, new_height: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.height = new_height;
     return new_self;
 }
-pub fn add_to_x(self: Rect, add_x: f32) Rect {
+pub fn addToX(self: Rect, add_x: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.x += add_x;
     return new_self;
 }
-pub fn add_to_y(self: Rect, add_y: f32) Rect {
+pub fn addToY(self: Rect, add_y: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.y += add_y;
     return new_self;
 }
-pub fn add_to_width(self: Rect, add_width: f32) Rect {
+pub fn addToWidth(self: Rect, add_width: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.width += add_width;
     return new_self;
 }
-pub fn add_to_height(self: Rect, add_height: f32) Rect {
+pub fn addToHeight(self: Rect, add_height: f32) Rect {
     var new_self = self;
     new_self.rl_rectangle.height += add_height;
     return new_self;

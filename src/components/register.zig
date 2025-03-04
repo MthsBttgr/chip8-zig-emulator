@@ -76,7 +76,7 @@ pub const Registers = struct {
     }
 
     ///Returns an array with the string with null bytes at the end
-    pub fn get_nullterminated_string(self: *const Registers, nr: u16) [20]u8 {
+    pub fn getNullterminatedString(self: *const Registers, nr: u16) [20]u8 {
         var buf: [20]u8 = [_]u8{0} ** 20;
 
         _ = std.fmt.bufPrint(&buf, "V{X} = 0x{X:0>2}", .{ nr, self.get(nr) }) catch unreachable; // 20 bytes is more than enough for this string

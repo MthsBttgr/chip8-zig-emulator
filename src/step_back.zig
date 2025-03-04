@@ -49,14 +49,14 @@ pub const CircularStepBackBuffer = struct {
         self.end_index = 0;
     }
 
-    pub fn save_state(self: *CircularStepBackBuffer, state: *const Chip8) void {
+    pub fn saveState(self: *CircularStepBackBuffer, state: *const Chip8) void {
         self.buffer[self.end_index] = Chip8State.new(state);
 
         self.curr_index = self.end_index;
         self.end_index = (self.end_index + 1) % self.len;
     }
 
-    pub fn get_current(self: *const CircularStepBackBuffer) ?*const Chip8State {
+    pub fn getCurrent(self: *const CircularStepBackBuffer) ?*const Chip8State {
         // std.debug.print("\nGet Current. Curr: {d}, End: {d}", .{ self.curr_index, self.end_index });
         const curr = self.buffer[self.curr_index];
 
@@ -69,11 +69,11 @@ pub const CircularStepBackBuffer = struct {
 
     /// Attempts to retrieve the previous `Chip8State` from the buffer.
     /// Returns `null` if the index is empty or if stepping back would reach the start.
-    pub fn step_back(self: *CircularStepBackBuffer) ?*const Chip8State {
-        self.decrement_curr();
+    pub fn stepBack(self: *CircularStepBackBuffer) ?*const Chip8State {
+        self.decrementCurr();
 
         if (self.curr_index == self.end_index) {
-            self.increment_curr();
+            self.incrementCurr();
             return null;
         }
 
@@ -83,17 +83,17 @@ pub const CircularStepBackBuffer = struct {
             return &(self.buffer[self.curr_index].?);
         }
 
-        self.increment_curr();
+        self.incrementCurr();
         return null;
     }
 
     /// Attempts to retrieve the next`Chip8State` from the buffer.
     /// Returns `null` if the index is empty or if stepping forward would reach the end.
-    pub fn step_forward(self: *CircularStepBackBuffer) ?*const Chip8State {
-        self.increment_curr();
+    pub fn stepForward(self: *CircularStepBackBuffer) ?*const Chip8State {
+        self.incrementCurr();
 
         if (self.curr_index == self.end_index) {
-            self.decrement_curr();
+            self.decrementCurr();
             return null;
         }
 
@@ -103,15 +103,15 @@ pub const CircularStepBackBuffer = struct {
             return &(self.buffer[self.curr_index].?);
         }
 
-        self.decrement_curr();
+        self.decrementCurr();
         return null;
     }
 
-    fn increment_curr(self: *CircularStepBackBuffer) void {
+    fn incrementCurr(self: *CircularStepBackBuffer) void {
         self.curr_index = (self.curr_index + 1) % self.len;
     }
 
-    fn decrement_curr(self: *CircularStepBackBuffer) void {
+    fn decrementCurr(self: *CircularStepBackBuffer) void {
         const index: i32 = @intCast(self.curr_index);
         const len: i32 = @intCast(self.len);
         self.curr_index = @intCast(@mod(index - 1, len));

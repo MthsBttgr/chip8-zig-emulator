@@ -51,19 +51,19 @@ pub fn deinit(self: *Chip8) void {
 ///Reads an instruction from memory
 ///An instruction consists of 16 bits, so it reads 2 u8 from memory and increments the program counter
 pub fn fetch(self: *Chip8) u16 {
-    const res = @as(u16, self.memory.load_addr(self.PC)) << 8 | @as(u16, self.memory.load_addr(self.PC + 1));
+    const res = @as(u16, self.memory.loadAddr(self.PC)) << 8 | @as(u16, self.memory.loadAddr(self.PC + 1));
     self.PC += 2;
 
     return res;
 }
 
 pub fn peek(self: *const Chip8) u16 {
-    const res = @as(u16, self.memory.load_addr(self.PC)) << 8 | @as(u16, self.memory.load_addr(self.PC + 1));
+    const res = @as(u16, self.memory.loadAddr(self.PC)) << 8 | @as(u16, self.memory.loadAddr(self.PC + 1));
     return res;
 }
 
 ///Loads rom and makes a copy of the bytes
-pub fn load_program(self: *Chip8, program: []const u8, program_name: []const u8) void {
+pub fn loadProgram(self: *Chip8, program: []const u8, program_name: []const u8) void {
     self.register.reset();
     self.PC = 0x0200;
     self.I_reg = 0;
@@ -71,10 +71,10 @@ pub fn load_program(self: *Chip8, program: []const u8, program_name: []const u8)
     self.stack.reset();
     self.display_arr = [_]u1{0} ** g.rows ** g.cols;
 
-    self.memory.load_program(program, program_name);
+    self.memory.loadProgram(program, program_name);
 }
 
-pub fn decode_and_execute(
+pub fn decodeAndExecute(
     self: *Chip8,
     instruction: u16,
 ) void {
@@ -272,7 +272,7 @@ pub fn decode_and_execute(
                 x_coordinate = x_base_coord;
 
                 const i: u8 = @intCast(offset);
-                const pixels = self.memory.load_addr(self.I_reg + i); //load horizontal slice of pixels in sprite
+                const pixels = self.memory.loadAddr(self.I_reg + i); //load horizontal slice of pixels in sprite
 
                 // std.debug.print("pixels: 0b{b}\n", .{pixels});
 
@@ -282,11 +282,11 @@ pub fn decode_and_execute(
                     const inv_pixel_nr = 7 - pixel_nr; //inverting so that loop counts right to left instead of left to right
                     const pixel: u1 = @truncate(pixels >> @truncate(inv_pixel_nr));
 
-                    if (self.display_arr[get_disp_arr_index(y_coordinate, x_coordinate)] & pixel == 1) {
+                    if (self.display_arr[getDispArrIndex(y_coordinate, x_coordinate)] & pixel == 1) {
                         self.register.VF = @as(u8, 1);
                     }
 
-                    self.display_arr[get_disp_arr_index(y_coordinate, x_coordinate)] ^= pixel;
+                    self.display_arr[getDispArrIndex(y_coordinate, x_coordinate)] ^= pixel;
 
                     x_coordinate += 1;
                 }
@@ -346,9 +346,9 @@ pub fn decode_and_execute(
                     const tens = (vx / 10) % 10;
                     const hundreds = vx / 100;
 
-                    self.memory.set_addr(self.I_reg, hundreds);
-                    self.memory.set_addr(self.I_reg + 1, tens);
-                    self.memory.set_addr(self.I_reg + 2, ones);
+                    self.memory.setAddr(self.I_reg, hundreds);
+                    self.memory.setAddr(self.I_reg + 1, tens);
+                    self.memory.setAddr(self.I_reg + 2, ones);
 
                     self.last_instruction = "Store VX as decimal in memory: 0xFX33";
                 },
@@ -356,7 +356,7 @@ pub fn decode_and_execute(
                     var inc_i: u16 = 0;
                     for (0..(x + 1)) |reg| {
                         const data = self.register.get(@truncate(reg));
-                        self.memory.set_addr(self.I_reg + @as(u16, @truncate(reg)), data);
+                        self.memory.setAddr(self.I_reg + @as(u16, @truncate(reg)), data);
 
                         inc_i += 1;
                     }
@@ -368,7 +368,7 @@ pub fn decode_and_execute(
                 0x65 => {
                     var inc_i: u16 = 0;
                     for (0..(x + 1)) |reg| {
-                        const data = self.memory.load_addr(self.I_reg + @as(u16, @truncate(reg)));
+                        const data = self.memory.loadAddr(self.I_reg + @as(u16, @truncate(reg)));
                         self.register.set(@truncate(reg), data);
 
                         inc_i += 1;
@@ -431,24 +431,24 @@ pub fn decode_and_execute(
     }
 }
 
-pub fn execute_one_instruction(self: *Chip8) void {
+pub fn executeOneInstruction(self: *Chip8) void {
     const instruction = self.fetch();
-    self.decode_and_execute(instruction);
+    self.decodeAndExecute(instruction);
 }
 
-fn get_disp_arr_index(y_cord: usize, x_cord: usize) usize {
+fn getDispArrIndex(y_cord: usize, x_cord: usize) usize {
     return y_cord * g.cols + x_cord;
 }
 
 /// This function runs the program untill it hits a drawinstruction or time since last frame is 1 second, then returns
 /// Input keys are updated each frame - not every instruction
-pub fn run_untill_timeout(self: *Chip8) void {
+pub fn runUntillTimeout(self: *Chip8) void {
     var instruction_counter: i32 = 0;
 
     // checking g.paused because, if an error occurs during execution, g.paused gets set to save the current state
     while (instruction_counter < g.instructions_pr_frame and !g.paused) {
         const instruction = self.fetch();
-        self.decode_and_execute(instruction);
+        self.decodeAndExecute(instruction);
         self.delay_timer.update();
         self.sound_timer.update();
 

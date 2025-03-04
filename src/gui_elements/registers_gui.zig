@@ -38,7 +38,7 @@ pub fn draw(self: *const RegisterGui, registers: *const Registers, sound_timer: 
 
             const coord = x_coord + y_coord * cols;
             const text: [20]u8 = if (coord < 16) blk: {
-                break :blk registers.get_nullterminated_string(@truncate(x_coord + y_coord * cols));
+                break :blk registers.getNullterminatedString(@truncate(x_coord + y_coord * cols));
             } else if (coord == 16) blk: {
                 var buf: [20]u8 = [_]u8{0} ** 20;
                 _ = std.fmt.bufPrint(&buf, "S-Timer: {d}", .{sound_timer}) catch unreachable;

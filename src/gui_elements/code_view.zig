@@ -26,7 +26,7 @@ pub fn init(screen_area: rl.Rectangle) CodeView {
     return CodeView{ .screen_area = screen_area, .code_view_area = code_view_area, .content = content, .view = view, .scroll = scroll };
 }
 
-pub fn step_through_draw(self: *CodeView, code: []u8, pc: u16) void {
+pub fn stepThroughDraw(self: *CodeView, code: []u8, pc: u16) void {
     if (g.show_code_during_step_through == false) {
         rl.drawRectangleRec(self.screen_area, rl.Color.gray);
         rl.drawText("Not supported in step-through mode\nby default - can be enabled", @intFromFloat(self.screen_area.x + padding), @intFromFloat(self.screen_area.y + self.screen_area.height / 2), 10, rl.Color.white);
@@ -60,14 +60,14 @@ pub fn draw(self: *CodeView, code: []u8, pc: u16) void {
 
     for (code, 0..) |item, i| {
         const index: f32 = @floatFromInt(i);
-        self.draw_single_code(item, @truncate(i), self.scroll.y + (padding + line_height) * index, pc);
+        self.drawSingleCode(item, @truncate(i), self.scroll.y + (padding + line_height) * index, pc);
     }
     rl.endScissorMode();
 
     rl.drawRectangleLinesEx(self.screen_area, 1.0, rl.Color.white);
 }
 
-fn draw_single_code(self: *const CodeView, code: u8, addr: u16, y_coord: f32, pc: u16) void {
+fn drawSingleCode(self: *const CodeView, code: u8, addr: u16, y_coord: f32, pc: u16) void {
     const rect = rl.Rectangle.init(self.view.x + padding, self.view.y + y_coord + padding, self.view.width - 2 * padding, line_height);
     const col = if (pc == addr) rl.Color.sky_blue else rl.Color.dark_gray;
     rl.drawRectangleRounded(rect, 0.3, 4, col);

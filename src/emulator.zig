@@ -23,11 +23,11 @@ pub fn deinit(self: *Emulator) void {
     self.chip8.deinit();
 }
 
-pub fn load_program(self: *Emulator, program_name: []const u8) void {
-    const rom = rom_parser.load_rom(program_name, self.alloc);
+pub fn loadProgram(self: *Emulator, program_name: []const u8) void {
+    const rom = rom_parser.loadRom(program_name, self.alloc);
     defer self.alloc.free(rom);
 
-    self.chip8.load_program(rom, program_name);
+    self.chip8.loadProgram(rom, program_name);
 }
 
 pub fn run(self: *Emulator) void {
@@ -47,20 +47,20 @@ pub fn run(self: *Emulator) void {
             g.error_msg = "Errors:";
         }
         if (!g.paused) {
-            self.chip8.run_untill_timeout();
+            self.chip8.runUntillTimeout();
         } else {
             if (rl.isKeyPressed(.right) or g.step_right) {
                 g.step_through = true;
 
-                if (history.step_forward() == null) {
-                    self.chip8.execute_one_instruction();
-                    history.save_state(&self.chip8);
+                if (history.stepForward() == null) {
+                    self.chip8.executeOneInstruction();
+                    history.saveState(&self.chip8);
                 }
                 g.step_right = false;
             } else if (rl.isKeyPressed(.left) or g.step_left) {
                 g.step_through = true;
 
-                _ = history.step_back();
+                _ = history.stepBack();
                 g.step_left = false;
             }
         }
@@ -68,10 +68,10 @@ pub fn run(self: *Emulator) void {
         rl.beginDrawing();
         rl.clearBackground(rl.Color.black);
 
-        if (history.get_current()) |curr| {
-            gui.draw_from_chip8state(curr, self);
+        if (history.getCurrent()) |curr| {
+            gui.drawFromChip8State(curr, self);
         } else {
-            gui.draw_from_chip8(self);
+            gui.drawFromChip8(self);
         }
         rl.endDrawing();
     }

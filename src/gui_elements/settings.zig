@@ -58,7 +58,7 @@ pub fn draw(self: *Settings) void {
     rl.drawRectangleLinesEx(rect, 1, rl.Color.dark_gray);
     rect.y += line_height + padding;
     self.codeview_rect = rect;
-    draw_setting(rect, "Step-through Code View", &g.show_code_during_step_through);
+    drawSetting(rect, "Step-through Code View", &g.show_code_during_step_through);
     rect.y += line_height + padding;
 
     const line_start1 = rl.Vector2.init(self.screen_area.x, rect.y);
@@ -67,13 +67,13 @@ pub fn draw(self: *Settings) void {
 
     rect.y += padding;
     self.grid_rect = rect;
-    draw_setting(rect, "Show Grid", &g.show_grid);
+    drawSetting(rect, "Show Grid", &g.show_grid);
     rect.y += line_height + padding;
     self.fps_rect = rect;
-    draw_setting(rect, "Show FPS", &g.show_fps);
+    drawSetting(rect, "Show FPS", &g.show_fps);
     rect.y += line_height + padding;
     self.tooltips_rect = rect;
-    draw_setting(rect, "Tooltips", &g.show_tooltips);
+    drawSetting(rect, "Tooltips", &g.show_tooltips);
     rect.y += line_height + padding;
 
     const line_start2 = rl.Vector2.init(self.screen_area.x, rect.y);
@@ -82,25 +82,25 @@ pub fn draw(self: *Settings) void {
 
     rect.y += padding;
     self.cosmac_shift_rect = rect;
-    draw_setting(rect, "Cosmac Shift:", &g.set_VX_to_VY_before_shift);
+    drawSetting(rect, "Cosmac Shift:", &g.set_VX_to_VY_before_shift);
     rect.y += line_height + padding;
     self.legacy_jump_rect = rect;
-    draw_setting(rect, "Legacy Jump:", &g.treat_jump_as_BNNN);
+    drawSetting(rect, "Legacy Jump:", &g.treat_jump_as_BNNN);
     rect.y += line_height + padding;
     self.inc_I_rect = rect;
-    draw_setting(rect, "Increment I", &g.increment_I_on_store_load);
+    drawSetting(rect, "Increment I", &g.increment_I_on_store_load);
     rect.y += line_height + padding;
     self.clear_vf_rect = rect;
-    draw_setting(rect, "Clear VF", &g.clear_VF_after_logic_instructions);
+    drawSetting(rect, "Clear VF", &g.clear_VF_after_logic_instructions);
 
     rl.endScissorMode();
 }
 
-fn draw_setting(area: rl.Rectangle, text: [*:0]const u8, setting: *bool) void {
+fn drawSetting(area: rl.Rectangle, text: [*:0]const u8, setting: *bool) void {
     _ = rg.guiToggle(area, text, setting);
 }
 
-pub fn draw_tooltips(self: *const Settings) void {
+pub fn drawTooltips(self: *const Settings) void {
     if (!rl.checkCollisionPointRec(rl.getMousePosition(), self.view)) return;
 
     tool_tip.draw(self.grid_rect, "Enables/Disables grid view in gamescreen", .rightdown);

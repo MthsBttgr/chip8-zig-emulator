@@ -59,7 +59,7 @@ pub fn draw(self: *const Playbar, chip8: *Chip8) void {
     if (rg.guiButton(self.rect_b4, "#115#") > 0) g.step_right = true;
 }
 
-pub fn draw_tooltips(self: *const Playbar) void {
+pub fn drawTooltips(self: *const Playbar) void {
     if (!rl.checkCollisionPointRec(rl.getMousePosition(), self.screen_area)) return;
     tool_tip.draw(self.rect_b1, "Reset execution of current program.\nProgram is completely reloaded from the file, \nin case memory got changed during execution", .leftdown);
     tool_tip.draw(self.rect_b2, "Step back one instruction during stepthrough mode.\nDuring stepthrough mode, the state of the chip8 is saved\nevery instruction. Up to 200 states can be saved\nbefore old ones are forgotten\n\nLeft arrow key can also be used", .leftdown);

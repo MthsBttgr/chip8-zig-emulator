@@ -7,10 +7,6 @@ const GameScreen = @This();
 
 screen_area: rl.Rectangle,
 
-fn get_disp_arr_index(y_cord: usize, x_cord: usize) usize {
-    return y_cord * g.cols + x_cord;
-}
-
 pub fn draw(self: *const GameScreen, display_array: [g.cols * g.rows]u1) void {
     const x_offset: i32 = @intFromFloat(self.screen_area.x);
     const y_offset: i32 = @intFromFloat(self.screen_area.y);
@@ -21,7 +17,7 @@ pub fn draw(self: *const GameScreen, display_array: [g.cols * g.rows]u1) void {
         const y_coord = @as(i32, @intCast(y));
         for (0..g.cols) |x| {
             const x_coord = @as(i32, @intCast(x));
-            if (display_array[get_disp_arr_index(y, x)] == 1) {
+            if (display_array[y * g.cols + x] == 1) {
                 rl.drawRectangle(x_coord * g.cell_width + x_offset, y_coord * g.cell_height + y_offset, g.cell_width, g.cell_height, rl.Color.white);
             }
             if (g.show_grid) {

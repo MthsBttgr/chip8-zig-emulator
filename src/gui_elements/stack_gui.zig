@@ -41,12 +41,12 @@ pub fn draw(self: *StackGui, stack: []const u16) void {
 
     for (stack, 0..) |item, i| {
         const index: f32 = @floatFromInt(i);
-        self.draw_pointer(i, item, self.scroll.y + (padding + line_height) * index);
+        self.drawPointer(i, item, self.scroll.y + (padding + line_height) * index);
     }
 
     rl.endScissorMode();
 }
-fn draw_pointer(self: *const StackGui, nr: usize, addr: u16, y_coord: f32) void {
+fn drawPointer(self: *const StackGui, nr: usize, addr: u16, y_coord: f32) void {
     const rect = rl.Rectangle.init(self.view.x + padding, self.view.y + y_coord + padding, self.view.width - 2 * padding, line_height);
     rl.drawRectangleRounded(rect, 0.3, 4, rl.Color.dark_gray);
 

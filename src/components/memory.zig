@@ -23,34 +23,34 @@ pub fn deinit(self: Memory) void {
 pub fn reset(self: *Memory) void {
     const name = std.mem.trimRight(u8, &self.current_program, "\x00");
     if (name.len > 0) {
-        const program = rom_parser.load_rom(name, self.mem.allocator);
-        self.load_program(program, name);
+        const program = rom_parser.loadRom(name, self.mem.allocator);
+        self.loadProgram(program, name);
 
         self.mem.allocator.free(program);
     }
 }
 
 ///Loads a program into Self
-pub fn load_program(self: *Memory, program: []const u8, program_name: []const u8) void {
+pub fn loadProgram(self: *Memory, program: []const u8, program_name: []const u8) void {
     const program_start_addr: usize = 0x0200;
     self.current_program = [_]u8{0} ** 64;
 
     self.mem.replaceRange(program_start_addr, program.len, program) catch unreachable;
-    self.load_font();
+    self.loadFont();
 
     std.mem.copyForwards(u8, self.current_program[0..], program_name);
 }
 
-pub fn set_addr(self: *Memory, index: u16, data: u8) void {
+pub fn setAddr(self: *Memory, index: u16, data: u8) void {
     self.mem.items[index] = data;
 }
 
-pub fn load_addr(self: *const Memory, index: u16) u8 {
+pub fn loadAddr(self: *const Memory, index: u16) u8 {
     return self.mem.items[index];
 }
 
 ///Loads font data into Self
-fn load_font(self: *Memory) void {
+fn loadFont(self: *Memory) void {
     std.mem.copyForwards(u8, self.mem.items[self.font_start_addr..], &font); //starts at 0x50 and ends at 0x9F
 }
 

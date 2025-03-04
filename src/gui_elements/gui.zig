@@ -32,14 +32,14 @@ err_bar: ErrBar,
 
 pub fn init() GUI {
     var game_screen_space = Rect.initRect(rl.Rectangle{ .x = 300, .y = 23, .width = @floatFromInt(g.cols * g.cell_width), .height = @floatFromInt(g.rows * g.cell_height) });
-    var reggui_space = game_screen_space.add_to_y(game_screen_space.height()).set_height(200);
-    const code_view_space = game_screen_space.add_to_x(game_screen_space.width()).set_y(0).set_width(200).add_to_height(reggui_space.height() + game_screen_space.y());
-    var playbar_space = game_screen_space.set_y(0).add_to_x(300).set_height(game_screen_space.y()).add_to_width(-600);
-    var special_registers_space = reggui_space.add_to_x(-300).set_width(300);
-    var stack_space = special_registers_space.add_to_y(-200).set_height(200);
-    var filepicker_space = playbar_space.set_x(0).set_width(300);
-    const settings_space = stack_space.set_y(filepicker_space.height()).set_height(stack_space.y() - filepicker_space.y());
-    const err_bar_space = Rect.init().set_y(reggui_space.y() + reggui_space.height()).set_height(30.0).set_width(code_view_space.width() + game_screen_space.width() + settings_space.width());
+    var reggui_space = game_screen_space.addToY(game_screen_space.height()).setHeight(200);
+    const code_view_space = game_screen_space.addToX(game_screen_space.width()).setY(0).setWidth(200).addToHeight(reggui_space.height() + game_screen_space.y());
+    var playbar_space = game_screen_space.setY(0).addToX(300).setHeight(game_screen_space.y()).addToWidth(-600);
+    var special_registers_space = reggui_space.addToX(-300).setWidth(300);
+    var stack_space = special_registers_space.addToY(-200).setHeight(200);
+    var filepicker_space = playbar_space.setX(0).setWidth(300);
+    const settings_space = stack_space.setY(filepicker_space.height()).setHeight(stack_space.y() - filepicker_space.y());
+    const err_bar_space = Rect.init().setY(reggui_space.y() + reggui_space.height()).setHeight(30.0).setWidth(code_view_space.width() + game_screen_space.width() + settings_space.width());
 
     const filepicker = Filepicker.init(filepicker_space.build(), "snake.ch8");
     const stackgui = StackGui.init(stack_space.build());
@@ -68,7 +68,7 @@ pub fn height(self: *const GUI) f32 {
     return self.playbar.screen_area.height + self.game_screen.screen_area.height + self.registers.screen_area.height;
 }
 
-pub fn draw_from_chip8(self: *GUI, emulator: *Emulator) void {
+pub fn drawFromChip8(self: *GUI, emulator: *Emulator) void {
     const chip8 = &emulator.chip8;
     self.game_screen.draw(chip8.display_arr);
     self.registers.draw(&chip8.register, chip8.sound_timer.get(), chip8.delay_timer.get());
@@ -85,14 +85,14 @@ pub fn draw_from_chip8(self: *GUI, emulator: *Emulator) void {
     }
 
     if (!g.show_tooltips) return;
-    self.settings.draw_tooltips();
-    self.playbar.draw_tooltips();
+    self.settings.drawTooltips();
+    self.playbar.drawTooltips();
 }
 
-pub fn draw_from_chip8state(self: *GUI, state: *const Chip8State, emulator: *Emulator) void {
+pub fn drawFromChip8State(self: *GUI, state: *const Chip8State, emulator: *Emulator) void {
     self.game_screen.draw(state.display);
     self.registers.draw(&state.register, state.sound_timer, state.delay_timer);
-    self.code_view.step_through_draw(emulator.chip8.memory.mem.items, state.PC);
+    self.code_view.stepThroughDraw(emulator.chip8.memory.mem.items, state.PC);
     self.settings.draw();
     const stack = std.mem.trimRight(u16, &state.stack, &[_]u16{0});
     self.stack.draw(stack);
@@ -106,6 +106,6 @@ pub fn draw_from_chip8state(self: *GUI, state: *const Chip8State, emulator: *Emu
     }
 
     if (!g.show_tooltips) return;
-    self.settings.draw_tooltips();
-    self.playbar.draw_tooltips();
+    self.settings.drawTooltips();
+    self.playbar.drawTooltips();
 }
