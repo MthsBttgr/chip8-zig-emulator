@@ -13,7 +13,7 @@ pub fn main() !void {
     defer emulator.deinit();
 
     const program_name = "snake.ch8";
-    emulator.load_program(program_name);
+    emulator.loadProgram(program_name);
 
     // try emulator.step_through_program();
     emulator.run();
