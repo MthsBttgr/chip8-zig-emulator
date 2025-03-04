@@ -1,6 +1,6 @@
 const std = @import("std");
 const Emulator = @import("emulator.zig");
-const rom_parser = @import("components/rom_parser.zig");
+const g = @import("globals.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -12,8 +12,7 @@ pub fn main() !void {
     var emulator = try Emulator.init(alloc);
     defer emulator.deinit();
 
-    const program_name = "snake.ch8";
-    emulator.loadProgram(program_name);
+    emulator.chip8.loadProgram(&g.blank_screen_program, "Filepicker");
 
     // try emulator.step_through_program();
     emulator.run();

@@ -1,12 +1,13 @@
 const std = @import("std");
 const rl = @import("raylib");
 const rg = @import("raygui");
+const g = @import("../globals.zig");
 const Emulator = @import("../emulator.zig");
 
 const Filepicker = @This();
 
 screen_area: rl.Rectangle,
-current_file: FilePath,
+current_file_path: FilePath,
 
 show_filepicker: bool = false,
 
@@ -19,23 +20,23 @@ var view_rect = rl.Rectangle{ .x = 0, .y = 0, .width = 0, .height = 0 };
 pub fn init(screen_area: rl.Rectangle, current_file: []const u8) Filepicker {
     var fp = Filepicker{
         .screen_area = screen_area,
-        .current_file = FilePath.init(),
+        .current_file_path = FilePath.init(),
     };
-    fp.current_file.setFile(current_file);
+    fp.current_file_path.setFile(current_file);
     return fp;
 }
 
 pub fn draw(self: *Filepicker, emulator: *Emulator) void {
-    if (rg.guiButton(self.screen_area, self.current_file.getFileName()) > 0) {
+    if (rg.guiButton(self.screen_area, self.current_file_path.getFileName()) > 0) {
         self.show_filepicker = !self.show_filepicker;
     }
 
     if (self.show_filepicker) {
         const window_rect = rl.Rectangle.init(100, 30, 500, 400);
 
-        const sub_dir = if (std.mem.eql(u8, self.current_file.getDirPath(), &[_]u8{ '.', '/' })) false else true;
+        const sub_dir = if (std.mem.eql(u8, self.current_file_path.getDirPath(), &[_]u8{ '.', '/' })) false else true;
 
-        const cwd = std.fs.cwd().openDir(self.current_file.getDirPath(), .{ .iterate = true }) catch {
+        const cwd = std.fs.cwd().openDir(self.current_file_path.getDirPath(), .{ .iterate = true }) catch {
             std.debug.print("Unable to open directory", .{});
             self.show_filepicker = false;
             return;
@@ -59,7 +60,7 @@ pub fn draw(self: *Filepicker, emulator: *Emulator) void {
         const content_rect = rl.Rectangle.init(0, 0, window_rect.width - 15, @as(f32, @floatFromInt(len)) * (padding + line_height));
 
         var zeroterm_directory_path: [512]u8 = [_]u8{0} ** 512;
-        std.mem.copyForwards(u8, &zeroterm_directory_path, self.current_file.getDirPath());
+        std.mem.copyForwards(u8, &zeroterm_directory_path, self.current_file_path.getDirPath());
         _ = rg.guiScrollPanel(window_rect, @ptrCast(&zeroterm_directory_path), content_rect, &scroll, &view_rect);
 
         rl.beginScissorMode(@as(i32, @intFromFloat(view_rect.x)), @as(i32, @intFromFloat(view_rect.y)), @as(i32, @intFromFloat(view_rect.width)), @as(i32, @intFromFloat(view_rect.height)));
@@ -69,7 +70,7 @@ pub fn draw(self: *Filepicker, emulator: *Emulator) void {
         if (sub_dir) {
             const button_rect = rl.Rectangle.init(view_rect.x + padding, view_rect.y + scroll.y + padding + (line_height + padding) * index, view_rect.width - 2 * padding, line_height);
             if (rg.guiButton(button_rect, "/..") > 0 and rl.checkCollisionPointRec(rl.getMousePosition(), view_rect)) {
-                self.current_file.returnFromSubdir();
+                self.current_file_path.returnFromSubdir();
             }
             index += 1;
         }
@@ -89,12 +90,12 @@ pub fn draw(self: *Filepicker, emulator: *Emulator) void {
             const button_rect = rl.Rectangle.init(view_rect.x + padding, view_rect.y + scroll.y + padding + (line_height + padding) * index, view_rect.width - 2 * padding, line_height);
             if (rg.guiButton(button_rect, @ptrCast(&inner_buf)) > 0 and rl.checkCollisionPointRec(rl.getMousePosition(), view_rect)) {
                 if (entry.kind == .file) {
-                    self.current_file.setFile(entry.name);
-                    emulator.loadProgram(self.current_file.getFullPath());
+                    self.current_file_path.setFile(entry.name);
+                    emulator.loadProgram(self.current_file_path.getFullPath());
 
                     self.show_filepicker = false;
                 } else {
-                    self.current_file.addSubdir(entry.name);
+                    self.current_file_path.addSubdir(entry.name);
                 }
             }
             index += 1;
@@ -136,6 +137,10 @@ const FilePath = struct {
 
     pub fn addSubdir(self: *FilePath, subdir: []const u8) void {
         if (self.end_is_file) self.previous();
+        if (subdir.len + self.len > 512) {
+            g.error_msg = "Error: Path to file is too long";
+            return;
+        }
 
         std.mem.copyForwards(u8, self.path[self.len..], subdir);
         self.len += @as(u16, @truncate(subdir.len));
@@ -152,6 +157,10 @@ const FilePath = struct {
 
     pub fn setFile(self: *FilePath, file: []const u8) void {
         if (self.end_is_file) self.previous();
+        if (file.len + self.len > 512) {
+            g.error_msg = "Error: Path to file is too long";
+            return;
+        }
 
         std.mem.copyForwards(u8, self.path[self.len..], file);
         std.mem.copyForwards(u8, self.file_name[0..], file);

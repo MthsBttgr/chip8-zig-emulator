@@ -25,3 +25,11 @@ pub var paused: bool = false;
 pub var step_through = false;
 pub var step_right = false;
 pub var step_left = false;
+
+// Blank screen loop
+pub var blank_screen_program: [4]u8 = [_]u8{
+    0,
+    0xE0, // Instruction to clear screen - 0x00E0
+    0x12,
+    0x00, // Instruction to jump too addr 0x0200, the program start addr, results in infinite loop}
+};

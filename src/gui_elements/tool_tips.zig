@@ -47,6 +47,11 @@ pub fn draw(bounds: rl.Rectangle, text: [:0]const u8, orientation: Orientation) 
 
             break :blk rl.Rectangle.init(rect_upper_left.x, rect_upper_left.y, @floatFromInt(rect_width), @floatFromInt(rect_height));
         },
+        .midup => blk: {
+            const rect_upper_left = rl.Vector2{ .x = bounds.x + (bounds.width - @as(f32, @floatFromInt(rect_width))) / 2, .y = bounds.y - @as(f32, @floatFromInt(rect_height)) };
+
+            break :blk rl.Rectangle.init(rect_upper_left.x, rect_upper_left.y, @floatFromInt(rect_width), @floatFromInt(rect_height));
+        },
     };
 
     var col = rl.Color.black;
@@ -61,4 +66,5 @@ const Orientation = enum {
     rightdown,
     leftup,
     leftdown,
+    midup,
 };

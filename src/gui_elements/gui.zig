@@ -41,7 +41,7 @@ pub fn init() GUI {
     const settings_space = stack_space.setY(filepicker_space.height()).setHeight(stack_space.y() - filepicker_space.y());
     const err_bar_space = Rect.init().setY(reggui_space.y() + reggui_space.height()).setHeight(30.0).setWidth(code_view_space.width() + game_screen_space.width() + settings_space.width());
 
-    const filepicker = Filepicker.init(filepicker_space.build(), "snake.ch8");
+    const filepicker = Filepicker.init(filepicker_space.build(), "#13#Filepicker");
     const stackgui = StackGui.init(stack_space.build());
     const special_registers = SpecialRegisters{ .screen_area = special_registers_space.build() };
     const playbar = Playbar.init(playbar_space.build());
@@ -87,6 +87,7 @@ pub fn drawFromChip8(self: *GUI, emulator: *Emulator) void {
     if (!g.show_tooltips) return;
     self.settings.drawTooltips();
     self.playbar.drawTooltips();
+    self.err_bar.draw_tooltip();
 }
 
 pub fn drawFromChip8State(self: *GUI, state: *const Chip8State, emulator: *Emulator) void {
@@ -108,4 +109,5 @@ pub fn drawFromChip8State(self: *GUI, state: *const Chip8State, emulator: *Emula
     if (!g.show_tooltips) return;
     self.settings.drawTooltips();
     self.playbar.drawTooltips();
+    self.err_bar.draw_tooltip();
 }
