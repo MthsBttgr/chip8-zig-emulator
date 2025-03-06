@@ -23,9 +23,9 @@ input: input.KeyInput = input.KeyInput{},
 last_instruction: []const u8 = "",
 last_instruction_nr: u16 = 0,
 
-pub fn init(alloc: std.mem.Allocator) !Chip8 {
+pub fn init() Chip8 {
     return Chip8{
-        .memory = try Memory.init(alloc),
+        .memory = Memory.init(),
         .stack = Stack{},
         .register = Register{},
         .delay_timer = Timer.init(),
@@ -33,6 +33,8 @@ pub fn init(alloc: std.mem.Allocator) !Chip8 {
     };
 }
 
+/// Resets Chip8 state, and program is reloaded from the file
+/// Program is reloaded from file, in case the memory got corrupted during execution
 pub fn reset(self: *Chip8) void {
     self.memory.reset();
     self.register.reset();
@@ -41,10 +43,6 @@ pub fn reset(self: *Chip8) void {
     self.last_instruction = "";
     self.stack.reset();
     self.display_arr = [_]u1{0} ** g.rows ** g.cols;
-}
-
-pub fn deinit(self: *Chip8) void {
-    self.memory.deinit();
 }
 
 ///Reads an instruction from memory
@@ -56,13 +54,15 @@ pub fn fetch(self: *Chip8) u16 {
     return res;
 }
 
+/// Reads an instruction from memory WITHOUT incrementing PC
+///An instruction consists of 16 bits, so it reads 2 u8 from memory
 pub fn peek(self: *const Chip8) u16 {
     const res = @as(u16, self.memory.loadAddr(self.PC)) << 8 | @as(u16, self.memory.loadAddr(self.PC + 1));
     return res;
 }
 
 ///Loads rom and makes a copy of the bytes
-pub fn loadProgram(self: *Chip8, program: []const u8, program_name: []const u8) void {
+pub fn loadProgram(self: *Chip8, program_name: []const u8) void {
     self.register.reset();
     self.PC = 0x0200;
     self.I_reg = 0;
@@ -70,9 +70,12 @@ pub fn loadProgram(self: *Chip8, program: []const u8, program_name: []const u8) 
     self.stack.reset();
     self.display_arr = [_]u1{0} ** g.rows ** g.cols;
 
-    self.memory.loadProgram(program, program_name);
+    self.memory.loadProgramFile(program_name);
 }
 
+/// This is where the emulation happens.
+/// Takes the instruction, decodes and figures out what needs to happen.
+/// State is updated depending on the instruction.
 pub fn decodeAndExecute(
     self: *Chip8,
     instruction: u16,
@@ -435,12 +438,13 @@ pub fn executeOneInstruction(self: *Chip8) void {
     self.decodeAndExecute(instruction);
 }
 
+/// Calculates display array index from the x and y coordinates
 fn getDispArrIndex(y_cord: usize, x_cord: usize) usize {
     return y_cord * g.cols + x_cord;
 }
 
-/// This function runs the program untill it hits a drawinstruction or time since last frame is 1 second, then returns
-/// Input keys are updated each frame - not every instruction
+/// Runs the emulator untill it reaches the maximum nr of instructions per frame defined in globals.zig
+/// Input keys are also updated each frame - not every instruction
 pub fn runUntillTimeout(self: *Chip8) void {
     var instruction_counter: i32 = 0;
 

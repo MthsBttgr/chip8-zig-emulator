@@ -72,7 +72,7 @@ pub fn drawFromChip8(self: *GUI, emulator: *Emulator) void {
     const chip8 = &emulator.chip8;
     self.game_screen.draw(chip8.display_arr);
     self.registers.draw(&chip8.register, chip8.sound_timer.get(), chip8.delay_timer.get());
-    self.code_view.draw(chip8.memory.mem.items, chip8.PC);
+    self.code_view.draw(&chip8.memory.mem, chip8.PC);
     self.playbar.draw(chip8);
     self.special_registers.draw(chip8.PC, chip8.I_reg, chip8.last_instruction_nr, chip8.last_instruction);
     self.settings.draw();
@@ -93,7 +93,7 @@ pub fn drawFromChip8(self: *GUI, emulator: *Emulator) void {
 pub fn drawFromChip8State(self: *GUI, state: *const Chip8State, emulator: *Emulator) void {
     self.game_screen.draw(state.display);
     self.registers.draw(&state.register, state.sound_timer, state.delay_timer);
-    self.code_view.stepThroughDraw(emulator.chip8.memory.mem.items, state.PC);
+    self.code_view.stepThroughDraw(&emulator.chip8.memory.mem, state.PC);
     self.settings.draw();
     const stack = std.mem.trimRight(u16, &state.stack, &[_]u16{0});
     self.stack.draw(stack);

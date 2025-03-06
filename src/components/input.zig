@@ -24,12 +24,11 @@ pub const KeyInput = packed struct(u16) {
     pub fn reset(self: *KeyInput) void {
         self.* = @bitCast(@as(u16, 0));
     }
+
     pub fn update(self: *KeyInput) void {
         self.reset();
         for (0..16) |i| {
-            if (rl.isKeyDown(map(@truncate(i)))) {
-                self.set(@truncate(i), true);
-            }
+            self.set(@truncate(i), rl.isKeyDown(map(@truncate(i))));
         }
     }
 
@@ -51,7 +50,7 @@ pub const KeyInput = packed struct(u16) {
             13 => self.kD = val,
             14 => self.kE = val,
             15 => self.kF = val,
-            else => {},
+            else => unreachable,
         }
     }
     pub fn get(self: *KeyInput, nr: u8) bool {

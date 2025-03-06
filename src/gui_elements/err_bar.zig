@@ -1,7 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const g = @import("../globals.zig");
-const toolTip = @import("tool_tips.zig");
+const tool_tip = @import("tool_tips.zig");
 
 const ErrBar = @This();
 
@@ -19,5 +19,5 @@ pub fn draw(self: *const ErrBar) void {
 }
 
 pub fn draw_tooltip(self: *const ErrBar) void {
-    toolTip.draw(self.screen_area, "Displays Error messages.\n\nTo clear error message either press play\nor somewhere inside the error message bar.", .midup);
+    tool_tip.draw(self.screen_area, "Displays Error messages.\n\nTo clear error message either press play\nor somewhere inside the error message bar.", .midup);
 }

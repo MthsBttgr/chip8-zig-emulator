@@ -10,24 +10,16 @@ const GUI = @import("gui_elements/gui.zig");
 
 chip8: Chip8,
 
-alloc: std.mem.Allocator,
+// alloc: std.mem.Allocator,
 
-pub fn init(alloc: std.mem.Allocator) !Emulator {
+pub fn init() Emulator {
     return Emulator{
-        .alloc = alloc,
-        .chip8 = try Chip8.init(alloc),
+        .chip8 = Chip8.init(),
     };
 }
 
-pub fn deinit(self: *Emulator) void {
-    self.chip8.deinit();
-}
-
 pub fn loadProgram(self: *Emulator, program_name: []const u8) void {
-    const rom = rom_parser.loadRom(program_name, self.alloc);
-    defer self.alloc.free(rom);
-
-    self.chip8.loadProgram(rom, program_name);
+    self.chip8.loadProgram(program_name);
 }
 
 pub fn run(self: *Emulator) void {

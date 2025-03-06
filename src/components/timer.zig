@@ -23,7 +23,7 @@ pub fn update(self: *Timer) void {
 
     const time_since_reset = self.timer.read();
 
-    if (time_since_reset < std.time.ns_per_s / 60) return;
+    if (time_since_reset < ns_pr_frame) return;
     self.timer.reset();
 
     const diff = time_since_reset / ns_pr_frame;

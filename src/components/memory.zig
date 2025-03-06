@@ -4,54 +4,50 @@ const rom_parser = @import("rom_parser.zig");
 
 const max_bytes: usize = 0x1000;
 
-mem: std.ArrayList(u8),
+mem: [max_bytes]u8 = [_]u8{0} ** max_bytes,
 font_start_addr: u16 = 0x50,
-current_program: [64]u8 = [_]u8{0} ** 64,
+current_program_path: [512]u8 = [_]u8{0} ** 512,
 
-pub fn init(allocator: std.mem.Allocator) !Memory {
-    const arr = try allocator.alloc(u8, max_bytes);
-    return .{
-        .mem = std.ArrayList(u8).fromOwnedSlice(allocator, arr),
-    };
-}
-
-pub fn deinit(self: Memory) void {
-    self.mem.deinit();
+pub fn init() Memory {
+    return Memory{};
 }
 
 ///Reloads memory from the file
 pub fn reset(self: *Memory) void {
-    const name = std.mem.trimRight(u8, &self.current_program, "\x00");
-    if (name.len > 0) {
-        const program = rom_parser.loadRom(name, self.mem.allocator);
-        self.loadProgram(program, name);
-
-        self.mem.allocator.free(program);
+    const path = std.mem.trimRight(u8, &self.current_program_path, "\x00");
+    if (path.len > 0) {
+        rom_parser.loadRom(path, self.mem[0x200..]);
     }
 }
 
-///Loads a program into Self
-pub fn loadProgram(self: *Memory, program: []const u8, program_name: []const u8) void {
+pub fn loadProgram(self: *Memory, program: []const u8) void {
     const program_start_addr: usize = 0x0200;
-    self.current_program = [_]u8{0} ** 64;
+    std.mem.copyForwards(u8, self.mem[program_start_addr..], program);
+    self.loadFont();
+}
 
-    self.mem.replaceRange(program_start_addr, program.len, program) catch unreachable;
+///Loads a program from file
+pub fn loadProgramFile(self: *Memory, program_path: []const u8) void {
+    const program_start_addr: usize = 0x0200;
+    self.current_program_path = [_]u8{0} ** 512;
+
+    rom_parser.loadRom(program_path, self.mem[program_start_addr..]);
     self.loadFont();
 
-    std.mem.copyForwards(u8, self.current_program[0..], program_name);
+    std.mem.copyForwards(u8, self.current_program_path[0..], program_path);
 }
 
 pub fn setAddr(self: *Memory, index: u16, data: u8) void {
-    self.mem.items[index] = data;
+    self.mem[index] = data;
 }
 
 pub fn loadAddr(self: *const Memory, index: u16) u8 {
-    return self.mem.items[index];
+    return self.mem[index];
 }
 
 ///Loads font data into Self
 fn loadFont(self: *Memory) void {
-    std.mem.copyForwards(u8, self.mem.items[self.font_start_addr..], &font); //starts at 0x50 and ends at 0x9F
+    std.mem.copyForwards(u8, self.mem[self.font_start_addr..], &font); //starts at 0x50 and ends at 0x9F
 }
 
 const font = [80]u8{

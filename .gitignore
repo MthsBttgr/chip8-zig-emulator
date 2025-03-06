@@ -1,4 +1,5 @@
 .zig-cache/
 zig-out/
+.helix/
 *.txt
 *.ch8
