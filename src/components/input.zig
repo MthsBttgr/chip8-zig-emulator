@@ -33,7 +33,7 @@ pub const KeyInput = packed struct(u16) {
     }
 
     pub fn set(self: *KeyInput, nr: u8, val: bool) void {
-        switch (nr) {
+        switch (nr & 0x0F) {
             0 => self.k0 = val,
             1 => self.k1 = val,
             2 => self.k2 = val,
@@ -54,7 +54,7 @@ pub const KeyInput = packed struct(u16) {
         }
     }
     pub fn get(self: *KeyInput, nr: u8) bool {
-        return switch (nr) {
+        return switch (nr & 0x0F) {
             0 => self.k0,
             1 => self.k1,
             2 => self.k2,
@@ -71,7 +71,7 @@ pub const KeyInput = packed struct(u16) {
             13 => self.kD,
             14 => self.kE,
             15 => self.kF,
-            else => false,
+            else => unreachable,
         };
     }
 

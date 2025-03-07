@@ -38,10 +38,12 @@ pub fn loadProgramFile(self: *Memory, program_path: []const u8) void {
 }
 
 pub fn setAddr(self: *Memory, index: u16, data: u8) void {
+    if (index >= max_bytes) return;
     self.mem[index] = data;
 }
 
 pub fn loadAddr(self: *const Memory, index: u16) u8 {
+    if (index >= max_bytes) return 0;
     return self.mem[index];
 }
 

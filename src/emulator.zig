@@ -3,7 +3,7 @@ const std = @import("std");
 const Chip8 = @import("chip-8.zig");
 const rl = @import("raylib");
 const g = @import("globals.zig");
-const StepBack = @import("step_back.zig").CircularStepBackBuffer;
+const StepBack = @import("step_back.zig").CircularStepBuffer;
 const rom_parser = @import("components/rom_parser.zig");
 
 const GUI = @import("gui_elements/gui.zig");
@@ -23,7 +23,7 @@ pub fn loadProgram(self: *Emulator, program_name: []const u8) void {
 }
 
 pub fn run(self: *Emulator) void {
-    rl.initWindow(1460, 735, "emulator view");
+    rl.initWindow(1460, 735, "ZigEmu");
     rl.setTargetFPS(60);
     var gui = GUI.init();
 

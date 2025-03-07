@@ -395,13 +395,9 @@ pub fn decodeAndExecute(
                     self.last_instruction = "store flag reg in reg 0..x: 0xFX85";
                 },
                 0x1E => {
-                    const I_reg_is_0FFF = self.I_reg == 0x0FFF;
                     self.I_reg += self.register.get(x);
 
-                    if (I_reg_is_0FFF and self.I_reg >= 0x1000) {
-                        self.register.VF = @bitCast(@as(u8, 1));
-                    }
-                    self.last_instruction = "VF = 1 IF I-reg overflows from 0xFFF: 0xFX1E";
+                    self.last_instruction = "I reg += VX";
                 },
                 0x0A => {
                     // this instruction blocks chip8 execution
@@ -452,10 +448,10 @@ pub fn runUntillTimeout(self: *Chip8) void {
     while (instruction_counter < g.instructions_pr_frame and !g.paused) {
         const instruction = self.fetch();
         self.decodeAndExecute(instruction);
-        self.delay_timer.update();
-        self.sound_timer.update();
 
         instruction_counter += 1;
     }
+    self.delay_timer.update();
+    self.sound_timer.update();
     self.input.update();
 }
